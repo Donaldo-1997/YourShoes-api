@@ -13,7 +13,7 @@ const fillDB = async ()=>{
             await Product.bulkCreate(shoes)             
             }
     } catch (error){
-        console.log(error) 
+        throw error 
     }
 }
 

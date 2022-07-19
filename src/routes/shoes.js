@@ -1,4 +1,4 @@
-/*
+
 const { Router } = require('express');
 const {Product} = require('../db.js');
 const { fillDB } = require('../dbLoad/fillDB')
@@ -50,9 +50,7 @@ router.get("/:id", async (req, res) => {
     }
   });
 module.exports = router;
-
-*/
-
+/* 
 
 const { Router } = require("express");
 const { Product } = require("../db");
@@ -142,4 +140,4 @@ router.post("/", async (req, res) => {
   }
 });
 
-module.exports = router
+module.exports = router */

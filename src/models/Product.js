@@ -3,11 +3,11 @@ const { DataTypes } = require('sequelize')
 module.exports = (sequelize) => {
     sequelize.define('product', {
         id: {
-            type: DataTypes.BIGINT,
+            type: DataTypes.STRING,
             primaryKey:true,
             allownull:false
         },
-        tittle: {
+        title: {
             type: DataTypes.STRING,
             allownull: false
         },
