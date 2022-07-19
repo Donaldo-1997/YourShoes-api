@@ -30,9 +30,12 @@ sequelize.models = Object.fromEntries(capitalizadedEntries);
 
 // Destructuring models from sequelize.models
 // here -->
-
+const { Category, Product } = sequelize.models;
 // Relations of models
 // here -->
+
+Category.belongsToMany(Product, { through: 'category_product' })
+Product.belongsToMany(Category, { through: 'category_product' })
 
 module.exports = {
     ...sequelize.models,
