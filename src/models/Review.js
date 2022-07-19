@@ -12,7 +12,13 @@ module.exports = (sequelize) => {
             allownull: false
         },
         rating:{
-            type: DataTypes.INTEGER,
+            type: DataTypes.ENUM({
+                values:['1','2','3','4','5']}),
+            allownull: false
+        },
+        isActive:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
             allownull: false
         }
     },{timestamps: false})

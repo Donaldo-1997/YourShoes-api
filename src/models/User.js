@@ -34,6 +34,19 @@ module.exports = (sequelize) => {
         address:{
             type: DataTypes.STRING,
             allownull:false
+        },
+        isAdmin:{
+            type: DataTypes.BOOLEAN,
+            allownull:false
+        },
+        isBanned:{
+            type: DataTypes.BOOLEAN,
+            allownull: false
+        },
+        isActive:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
+            allownull: false
         }
     },{timestamps: false})
 }
