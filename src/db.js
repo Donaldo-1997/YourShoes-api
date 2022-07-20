@@ -30,9 +30,27 @@ sequelize.models = Object.fromEntries(capitalizadedEntries);
 
 // Destructuring models from sequelize.models
 // here -->
-
+const { Category, Product, Review, Order, User, Brand} = sequelize.models;
 // Relations of models
 // here -->
+
+Category.belongsToMany(Product, {through: 'category_product',timestamps: false})
+Product.belongsTo(Category)
+
+Product.belongsToMany(Review, {through: 'review_product',timestamps: false})
+Review.belongsTo(Product)
+
+Brand.belongsToMany(Product,{through: 'brand_product',timestamps: false})
+Product.belongsTo(Brand)
+
+User.belongsToMany(Review, {through: 'user_review',timestamps: false})
+Review.belongsTo(User)
+
+User.belongsToMany(Order, {through: 'user_order',timestamps: false})
+Order.belongsTo(User)
+
+Product.belongsToMany(Order, {through:'order_product',timestamps: false})
+Order.belongsToMany(Product, {through:'order_product',timestamps: false})
 
 module.exports = {
     ...sequelize.models,
