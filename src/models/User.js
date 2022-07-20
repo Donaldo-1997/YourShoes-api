@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
             allownull:false
         },
         date_of_Birth:{
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allownull: false
         },
         address:{
@@ -37,10 +37,12 @@ module.exports = (sequelize) => {
         },
         isAdmin:{
             type: DataTypes.BOOLEAN,
+            defaultValue: false,
             allownull:false
         },
         isBanned:{
             type: DataTypes.BOOLEAN,
+            defaultValue: false,
             allownull: false
         },
         isActive:{

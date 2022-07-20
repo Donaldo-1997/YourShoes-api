@@ -49,7 +49,7 @@ router.get("/:id", async (req, res) => {
       console.log(error);
     }
   });
-module.exports = router;
+
 /* 
 
 const { Router } = require("express");
@@ -141,3 +141,7 @@ router.post("/", async (req, res) => {
 });
 
 module.exports = router */
+
+
+
+module.exports = router;
