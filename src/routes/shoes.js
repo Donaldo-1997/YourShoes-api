@@ -14,6 +14,7 @@ router.get('/', async (req, res, next)=> {
   
 
   const {name, priceMax, priceMin, brand} = req.query;
+  
   let options = {}
   let productsFiltered = undefined;
 
@@ -40,7 +41,7 @@ router.get('/', async (req, res, next)=> {
   }
   else if(brand) {
     try {
-      productsFiltered = (await Product.findAll({ include: Brand })).filter(product => product.dataValues.brand.name === brand)
+      productsFiltered =  await Product.findAll({ where:{ brand:{ [Op.iLike]: `%${brand}%` },include: Brand }})
 
       console.log(productsFiltered, 'desde brand');
 
@@ -79,7 +80,10 @@ router.get('/', async (req, res, next)=> {
 
   else {
     try {
-      let result = cargo ? await Product.findAll({ include: { all: true } }) : await setDataApi()
+      let result = cargo ? await Product.findAll({ include: [
+        {model: Brand},
+        {model:Category}
+        ] }) : await setDataApi()
       cargo = true;
   
         const allProducts = await Product.findAll( {include:[
@@ -87,7 +91,7 @@ router.get('/', async (req, res, next)=> {
           {model:Category}
           ]});
 
-        res.status(200).json(allProducts)
+        res.status(200).json(result)
     } catch (error) {
       console.log(error);
       next(error)
@@ -142,7 +146,7 @@ router.get("/:id", async (req, res) => {
         },
       })
       const findCategories= await Category.findOne({where:{name: { [Op.iLike]: `%${category}%`}}})
-      const findBrand= await Brand.findOne({where: { name:  brand } })
+      const findBrand= await Brand.findOne({where: { name:  {[Op.iLike]: `%${brand}%` } }})
       newProduct.setCategory(findCategories)
       newProduct.setBrand(findBrand)
       !created ? res.status(201).send('There is already a Product with that title') :
