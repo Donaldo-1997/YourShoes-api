@@ -41,7 +41,10 @@ router.get('/', async (req, res, next)=> {
   }
   else if(brand) {
     try {
-      productsFiltered =  await Product.findAll({ where:{ brand:{ [Op.iLike]: `%${brand}%` },include: Brand }})
+      productsFiltered =  await Product.findAll({ include: [
+        { model: Brand, where: { name: brand } },
+        { model: Category },
+      ]})
 
       console.log(productsFiltered, 'desde brand');
 
