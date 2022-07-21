@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
 
       const brandsApi = getAllApi.flat().map(e => ({ 
         id: e.attributes[0].values[0].id || `${Math.round(Math.random() * 1000000000)}`, 
-        name: e.attributes[0].value_name 
+        brand: e.attributes[0].value_name 
       }))
  
       console.log(brandsApi);
