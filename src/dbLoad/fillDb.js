@@ -1,4 +1,4 @@
-const  {infoApi} = require('./infoApi.js');
+/* const  {infoApi} = require('./infoApi.js');
 const {Product, Brand} = require('../db.js');
 
 const fillDB = async ()=>{
@@ -37,4 +37,4 @@ const fillTableBrand = async () => {
 }
 
 
-module.exports = { fillDB, fillTableBrand };
+module.exports = { fillDB, fillTableBrand }; */
