@@ -3,14 +3,15 @@ const { Router } = require('express');
 const {Product, Brand, Category} = require('../db.js');
 const {Op} = require('sequelize')
 const { fillDB, fillTableBrand } = require('../dbLoad/fillDB');
+const { getDb, setDataApi } = require("../controllers/index.js");
 
 
 const router = Router();
 
+let cargo = false
 router.get('/', async (req, res, next)=> {
   // Llenando la DB
   
-  await fillDB()
 
   const {name, priceMax, priceMin, brand} = req.query;
   let options = {}
@@ -78,7 +79,9 @@ router.get('/', async (req, res, next)=> {
 
   else {
     try {
-
+      let result = cargo ? await Product.findAll({ include: { all: true } }) : await setDataApi()
+      cargo = true;
+  
         const allProducts = await Product.findAll( {include:[
           {model: Brand},
           {model:Category}
@@ -132,6 +135,7 @@ router.get("/:id", async (req, res) => {
           title
         },
         defaults: {
+         id:`MLA${Math.round(Math.random() * 1000000000)}`,
          model,
          image,
          price,
