@@ -5,7 +5,7 @@ const axios = require('axios')
 
 const router = Router();
 
-router.get('/pruebas', async (req, res, next) => {
+/*router.get('/pruebas', async (req, res, next) => {
     try {
         const { data } = await axios.get('https://api.mercadolibre.com/sites/MLA/search?q=zapatillas&offset=0')
 
@@ -23,7 +23,7 @@ router.get('/pruebas', async (req, res, next) => {
         next(error)
     }
 })
-
+*/
 router.get('/', async (req, res, next) => {
     let { priceMax, priceMin, brand } = req.query
     let productsFiltered = undefined
