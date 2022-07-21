@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize')
 
 module.exports = (sequelize) => {
     sequelize.define('product', {
+        
         title: {
             type: DataTypes.STRING,
             allownull: false

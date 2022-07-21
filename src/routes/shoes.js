@@ -1,36 +1,91 @@
 
 const { Router } = require('express');
-const {Product} = require('../db.js');
-const { fillDB } = require('../dbLoad/fillDB')
+const {Product, Brand} = require('../db.js');
 const {Op} = require('sequelize')
+const { fillDB, fillTableBrand } = require('../dbLoad/fillDB')
 
 
 const router = Router();
 
-//GET /countries y GET /countries?name='...'
-router.get('/', async (req, res)=> {
-    const {name} = req.query;
-    let options = {}
+router.get('/', async (req, res, next)=> {
+  // Llenando la DB
+  
+  await fillDB()
+
+  const {name, priceMax, priceMin, brand} = req.query;
+  let options = {}
+  let productsFiltered = undefined;
+
+  if(name) {
     try {
-        await fillDB()
-        if(name){
-            options = {
-                where:{
-                    title: {
-                        [Op.iLike]: `%${name}%`, // Para encontrar nombre independientemente si es mayus o minuscula
-                    }
-                }
-            }
-        }
-        const nameSearch = await Product.findAll({...options})
-        if(!nameSearch.length) return res.status(404).send(`El nombre '${name}' no arrojo ningun resultado`)
-            res.json(nameSearch)
+      options = {
+        where: {
+          title: { [Op.iLike]: `%${name}%` } // Para encontrar nombre independientemente si es mayus o minuscula
+        },
+      }
+
+      const nameSearch = await Product.findAll({ ...options, include: Brand })
+
+      if (!nameSearch.length) return res.status(404).send(`El nombre '${name}' no arrojo ningun resultado`)
+
+      res.json(nameSearch)
     } catch (error) {
-        console.log(error)
+      console.log(error)
+      next(error)
     }
+  }
+  else if(brand) {
+    try {
+      productsFiltered = (await Product.findAll({ include: Brand })).filter(product => product.dataValues.brand.name === brand)
+
+      console.log(productsFiltered, 'desde brand');
+
+      res.status(200).json(productsFiltered)
+
+    } catch (error) {
+      console.log(error);
+      next(error)
+    }
+
+  }
+
+
+  if(priceMax) {
+    try {
+      productsFiltered = await Product.findAll({
+        where: {
+          price: {
+            [Op.and]: [
+              { [Op.gte]: priceMin ? priceMin : 0 }, // Precio sea mayor o igual a precio minimo
+              { [Op.lte]: priceMax } // Precio sea menor o igual a precio maximo
+            ]
+          }
+        }
+      })
+
+      productsFiltered.sort((a, b) => b.price - a.price) // ordeno precio de mayor a menor
+
+      res.status(200).json(productsFiltered)
+
+    } catch (error) {
+      console.log(error);
+      next(error)
+    }
+  }
+
+  else {
+    try {
+
+        const allProducts = await Product.findAll({ include: Brand })
+
+        res.status(200).json(allProducts)
+    } catch (error) {
+      console.log(error);
+      next(error)
+    }
+  }
+
 });
-
-
 
 
 
@@ -38,7 +93,8 @@ router.get("/:id", async (req, res) => {
     try {
       const { id } = req.params;
       if (id) {
-        const foundProduct = await Product.findByPk(id);
+        const foundProduct = await Product.findByPk(id, {include:Brand});
+        
         if (foundProduct) {
           res.status(200).send(foundProduct);
         } else {
@@ -50,98 +106,36 @@ router.get("/:id", async (req, res) => {
     }
   });
 
-/* 
-
-const { Router } = require("express");
-const { Product } = require("../db");
-const router = Router();
-const axios = require("axios");
-const { Op } = require("sequelize");
-const { getDb } = require("../controllers/index");
-
-
-router.get("/", async (req, res) => {
-  try {
-    const dbInfo = await getDb();
-    if (!dbInfo.length) {
-      const shoesApi = await axios(
-        `https://api.mercadolibre.com/sites/MLA/search?q=zapatillas&offset=0`
-      );
-      const result = shoesApi.data.results.map((s) => {
-        return {
-          id: s.id,
-          title: s.title,
-          image: s.thumbnail,
-          brand: s.attributes ? s.attributes[0].value_name : "Not found",
-          model: s.attributes ? s.attributes[2].value_name : "Not found",
-          price: s.price,
-        };
-      });
-      const createdInfo = await Product.bulkCreate(result);
-      res.send(createdInfo);
-    } else {
-      const { name } = req.query;
-      if (name) {
-        const foundShoes = await Product.findAll({
-          where: {
-            title: {
-              [Op.iLike]: `%${name}%`,
-            },
-          },
-        });
-        foundShoes.length
-          ? res.status(200).send(foundShoes)
-          : res.status(404).send("Sneakers not found");
-      } else {
-        res.status(200).json(dbInfo);
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-router.get("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (id) {
-      const foundProduct = await Product.findByPk(id);
-      if (foundProduct) {
-        res.status(200).send(foundProduct);
-      } else {
-        res.status(400).json("ID not found");
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-router.post("/", async (req, res) => {
-  try {
-    const { title, image, brand, model, price } = req.query;
-    if (!title || !image || !brand || !model || !price) {
-      res.status(404).send("Parameters incomplete");
-    } else {
-      const create = await Product.create({
+  router.post("/", async(req, res)=>{
+    try{
+      const { 
+        title,
+        model, 
+        image, 
+        price,
+        brand
+        } = req.body
+    console.log(req.body);
+    
+      const [newProduct, created] = await Product.findOrCreate({
         where: {
-          title,
-          image,
-          brand,
-          model,
-          price,
+          title
         },
-      });
-      const createFinish = await addProduct(create);
-      res.status(200).send(createFinish);
+        defaults: {
+         model,
+         image,
+         price
+        },
+      })
+      const findBrand= await Brand.findOne({where: { name:  brand } })
+      newProduct.setBrand(findBrand)
+      !created ? res.status(201).send('There is already a Product with that title') :
+        res.status(200).json(newProduct);
+
+    }catch(error){
+      console.log(error)
+      res.status(404).json(error)
     }
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-module.exports = router */
-
-
+  })
 
 module.exports = router;
