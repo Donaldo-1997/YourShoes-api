@@ -34,20 +34,21 @@ const setDataApi = async () => {
     id: e.id,
     title: e.title,
     image: e.thumbnail,
-    brand: e.attributes ? e.attributes[0].value_name : "Not found",
+    brand: e.attributes ? e.attributes[0].values[0].id : "Not found",
     model: e.attributes && e.attributes.length === 3 ? e.attributes[2].value_name : "Not found",
     price: e.price, //parseInt(s.price)
     category: e.category_id,
     stock: e.available_quantity,
     sold: e.sold_quantity                                                                                                       
   }));
-  
+ 
   //cargo los productos al db y necesita que ya este cargada las categoria para que se cree la relacion
   await Promise.all(
     cargoalDB.map(async (el) => {
+      const foundBrand= await Brand.findByPk(el.brand)
       const foundCategories = await Category.findByPk(el.category);
-      const foundBrand= await Brand.findOne({where: {name: el.brand}})
       const newProduct = await Product.create(el);
+      await newProduct.setBrand(foundBrand)
       await newProduct.setCategory(foundCategories);
       return newProduct;
     })
