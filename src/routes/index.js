@@ -8,7 +8,7 @@ const user = require("./postput");
  
 //--------------------------ROUTES
 router.use("/user", user);
-router.use("/user", user)
+router.use("/user", user);
 router.use("/shoes/filter", shoesFilter);
 router.use("/shoes", shoesRouter);
 
