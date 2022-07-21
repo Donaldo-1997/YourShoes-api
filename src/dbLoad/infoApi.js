@@ -13,6 +13,7 @@ const infoApi = async () => {
     
     const results = apiData.map((s) => {
         return{
+            categories: s.categories,
             title: s.title,
             image: s.thumbnail,
             model: s.attributes ? s.attributes[2].value_name : "Not found",

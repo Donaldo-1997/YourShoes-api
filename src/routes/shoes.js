@@ -1,8 +1,8 @@
 
 const { Router } = require('express');
-const {Product, Brand} = require('../db.js');
+const {Product, Brand, Category} = require('../db.js');
 const {Op} = require('sequelize')
-const { fillDB, fillTableBrand } = require('../dbLoad/fillDB')
+const { fillDB, fillTableBrand } = require('../dbLoad/fillDB');
 
 
 const router = Router();
@@ -24,7 +24,10 @@ router.get('/', async (req, res, next)=> {
         },
       }
 
-      const nameSearch = await Product.findAll({ ...options, include: Brand })
+      const nameSearch = await Product.findAll({ ...options, include:[
+        {model: Brand},
+        {model:Category}
+        ]})
 
       if (!nameSearch.length) return res.status(404).send(`El nombre '${name}' no arrojo ningun resultado`)
 
@@ -76,7 +79,10 @@ router.get('/', async (req, res, next)=> {
   else {
     try {
 
-        const allProducts = await Product.findAll({ include: Brand })
+        const allProducts = await Product.findAll( {include:[
+          {model: Brand},
+          {model:Category}
+          ]});
 
         res.status(200).json(allProducts)
     } catch (error) {
@@ -93,7 +99,11 @@ router.get("/:id", async (req, res) => {
     try {
       const { id } = req.params;
       if (id) {
-        const foundProduct = await Product.findByPk(id, {include:Brand});
+        const foundProduct = await Product.findByPk(id, 
+          {include:[
+            {model: Brand},
+            {model:Category}
+          ]});
         
         if (foundProduct) {
           res.status(200).send(foundProduct);
@@ -113,9 +123,9 @@ router.get("/:id", async (req, res) => {
         model, 
         image, 
         price,
-        brand
+        brand,
+        category
         } = req.body
-    console.log(req.body);
     
       const [newProduct, created] = await Product.findOrCreate({
         where: {
@@ -124,10 +134,12 @@ router.get("/:id", async (req, res) => {
         defaults: {
          model,
          image,
-         price
+         price,
         },
       })
+      const findCategories= await Category.findOne({where:{name: { [Op.iLike]: `%${category}%`}}})
       const findBrand= await Brand.findOne({where: { name:  brand } })
+      newProduct.setCategory(findCategories)
       newProduct.setBrand(findBrand)
       !created ? res.status(201).send('There is already a Product with that title') :
         res.status(200).json(newProduct);
