@@ -1,4 +1,4 @@
-const { Product, Category } = require("../db");
+const { Product, Category, Brand } = require("../db");
 const axios = require("axios");
 
 const getDb = async () => {
@@ -46,6 +46,7 @@ const setDataApi = async () => {
   await Promise.all(
     cargoalDB.map(async (el) => {
       const foundCategories = await Category.findByPk(el.category);
+      const foundBrand= await Brand.findOne({where: {name: el.brand}})
       const newProduct = await Product.create(el);
       await newProduct.setCategory(foundCategories);
       return newProduct;
@@ -60,5 +61,16 @@ const getDbCategories = async () => {
   const foundCategories = await Category.findAll({include: { all:true}});
   return foundCategories;
 };
+const getDbBrand = async () => {
+  try {
+      const brands = await Brand.findAll({include: { all:true}});
+      
+      return brands;
 
-module.exports = { getDb, getDbCategories, setDataApi };
+  } catch (error) {
+      throw error
+  }
+}
+
+
+module.exports = { getDb, getDbCategories, setDataApi, getDbBrand };
