@@ -3,13 +3,14 @@ const router = Router();
 
 //--------------------------IMPORT
 const shoesRouter = require("./shoes");
-const shoesFilter = require("./getProductsFiltered");
 const user = require("./postput");
 const categories= require("./getCategories")
+const brands= require("./brands")
  
 //--------------------------ROUTES
 router.use("/user", user);
-router.use("/shoes/filter", shoesFilter);
 router.use("/shoes", shoesRouter);
-router.use("/categories", categories)
+router.use("/categories", categories);
+router.use("/brands", brands)
+
 module.exports = router;
