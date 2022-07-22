@@ -44,7 +44,7 @@ router.get('/', async (req, res, next) => {
     try {
       productsFiltered = await Product.findAll({
         include: [
-          { model: Brand, where: { name: brand } },
+          { model: Brand, where: { name: {[Op.iLike]: `%${brand}%`}}},
           { model: Category },
         ]
       })
