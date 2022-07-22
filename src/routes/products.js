@@ -2,7 +2,6 @@
 const { Router } = require('express');
 const { Product, Brand, Category } = require('../db.js');
 const { Op } = require('sequelize')
-const { fillDB, fillTableBrand } = require('../dbLoad/fillDB');
 const { getDb, setDataApi } = require("../controllers/index.js");
 
 
