@@ -41,13 +41,13 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/callback', passport.authenticate('google', { failureRedirect: '/failed' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/good');
+    res.redirect('good');
   }
 );
 
 router.get('/logout', (req, res) => {
     req.session = null;
     req.logout();
-    res.redirect('/');
+    res.redirect('/shoes');
 })
 module.exports = router;
