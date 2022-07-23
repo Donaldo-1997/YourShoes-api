@@ -41,10 +41,10 @@ const setDataApi = async () => {
     stock: e.available_quantity,
     sold: e.sold_quantity                                                                                                       
   }));
- 
+  const cargoFinal= cargoalDB.filter(e=>e.id!=='MLA1142122158')
   //cargo los productos al db y necesita que ya este cargada las categoria para que se cree la relacion
   await Promise.all(
-    cargoalDB.map(async (el) => {
+    cargoFinal.map(async (el) => {
       const foundBrand= await Brand.findByPk(el.brand)
       const foundCategories = await Category.findByPk(el.category);
       const newProduct = await Product.create(el);

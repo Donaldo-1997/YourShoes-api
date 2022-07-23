@@ -33,7 +33,7 @@ router.get('/', async (req, res, next) => {
       })
 
       if (!nameSearch.length) return res.status(404).send(`El nombre '${name}' no arrojo ningun resultado`)
-
+      
       res.json(nameSearch)
     } catch (error) {
       console.log(error)
@@ -49,7 +49,7 @@ router.get('/', async (req, res, next) => {
         ]
       })
 
-      console.log(productsFiltered, 'desde brand');
+      
 
       res.status(200).json(productsFiltered)
 
@@ -98,10 +98,9 @@ router.get('/', async (req, res, next) => {
       }) : await setDataApi()
 
       cargo = true;
-      const filterZapamala= result.find(e=> e.id==='MLA1142122158')
-      const result1= result.filter(e=> e!== filterZapamala)
       
-      res.status(200).json(result1)
+      
+      res.status(200).json(result)
     } catch (error) {
       console.log(error);
       next(error)
