@@ -98,8 +98,10 @@ router.get('/', async (req, res, next) => {
       }) : await setDataApi()
 
       cargo = true;
-
-      res.status(200).json(result)
+      const filterZapamala= result.find(e=> e.id==='MLA1142122158')
+      const result1= result.filter(e=> e!== filterZapamala)
+      
+      res.status(200).json(result1)
     } catch (error) {
       console.log(error);
       next(error)
