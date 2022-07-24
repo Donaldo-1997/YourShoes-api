@@ -1,39 +1,26 @@
-
 const { Router } = require('express');
 const { Product, Brand, Category } = require('../db.js');
 const { Op } = require('sequelize')
-const { getDb, setDataApi } = require("../controllers/index.js");
-
-
+const {setDataApi } = require("../controllers/index.js");
 const router = Router();
 
 let cargo = false
 router.get('/', async (req, res, next) => {
-  // Llenando la DB
-
-
   const { name, priceMax, priceMin, brand } = req.query;
-
-  let options = {}
   let productsFiltered = undefined;
-
   if (name) {
     try {
-      options = {
-        where: {
-          title: { [Op.iLike]: `%${name}%` } // Para encontrar nombre independientemente si es mayus o minuscula
-        },
-      }
-
       const nameSearch = await Product.findAll({
-        ...options, include: [
+        where: {
+          title: { [Op.iLike]: `%${name}%` } 
+        },
+         include: [
           { model: Brand },
           { model: Category }
         ]
       })
 
       if (!nameSearch.length) return res.status(404).send(`El nombre '${name}' no arrojo ningun resultado`)
-      
       res.json(nameSearch)
     } catch (error) {
       console.log(error)
@@ -44,24 +31,17 @@ router.get('/', async (req, res, next) => {
     try {
       productsFiltered = await Product.findAll({
         include: [
-          { model: Brand, where: { name: {[Op.iLike]: `%${brand}%`}}},
+          { model: Brand, where:{name:{[Op.iLike]:`%${brand}%`}}},
           { model: Category },
         ]
       })
-
-      
-
       res.status(200).json(productsFiltered)
-
     } catch (error) {
       console.log(error);
       next(error)
     }
-
   }
-
-
-  if (priceMax) {
+  else if (priceMax) {
     try {
       productsFiltered = await Product.findAll({
         where: {
@@ -77,17 +57,13 @@ router.get('/', async (req, res, next) => {
           { model: Category },
         ]
       })
-
       productsFiltered.sort((a, b) => b.price - a.price) // ordeno precio de mayor a menor
-
       res.status(200).json(productsFiltered)
-
     } catch (error) {
       console.log(error);
       next(error)
     }
   }
-
   else {
     try {
       let result = cargo ? await Product.findAll({
@@ -96,10 +72,7 @@ router.get('/', async (req, res, next) => {
           { model: Category }
         ]
       }) : await setDataApi()
-
-      cargo = true;
-      
-      
+      cargo = true; 
       res.status(200).json(result)
     } catch (error) {
       console.log(error);
@@ -108,8 +81,6 @@ router.get('/', async (req, res, next) => {
   }
 
 });
-
-
 
 router.get("/:id", async (req, res) => {
   try {

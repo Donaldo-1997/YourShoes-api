@@ -38,8 +38,6 @@ router.get("/", async (req, res) => {
         brand: e.attributes[0].value_name 
       }))
  
-      console.log(brandsApi);
-
       const setBrands = [...new Set(brandsApi.map(JSON.stringify))].map(e => JSON.parse(e))
       //me la llevo para toda la vida
 

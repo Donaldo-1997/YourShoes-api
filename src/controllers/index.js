@@ -45,9 +45,9 @@ const setDataApi = async () => {
   //cargo los productos al db y necesita que ya este cargada las categoria para que se cree la relacion
   await Promise.all(
     cargoFinal.map(async (el) => {
+      const newProduct = await Product.create(el);
       const foundBrand= await Brand.findByPk(el.brand)
       const foundCategories = await Category.findByPk(el.category);
-      const newProduct = await Product.create(el);
       await newProduct.setBrand(foundBrand)
       await newProduct.setCategory(foundCategories);
       return newProduct;
