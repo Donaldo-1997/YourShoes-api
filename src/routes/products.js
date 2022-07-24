@@ -5,55 +5,11 @@ const { getByName, getByBrand, getByCategory, getByPrice, getAll } = require('..
 const router = Router();
 
 router.get('/', async (req, res, next) => {
-  const { name, priceMax, priceMin, brand, category, asc_desc } = req.query;
+  const { name, priceMax, priceMin, brand, category, size } = req.query;
 
   if(priceMax && priceMin && category && brand && name) {
     try {
-      productsFiltered = await Product.findAll({
-        include: [
-          { model: Brand, where:{name:{[Op.iLike]:`%${brand}%`}}},
-          { model: Category },
-        ]
-      })
-      res.status(200).json(productsFiltered)
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-  }
-  else if (size) {
-    try { 
-       productsFiltered = await Product.findAll({
-        where:{size:{[Op.contains]:[{number:size}]}},
-        attributes: ['size'],
-        include: [
-          { model: Brand},
-          { model: Category },
-        ]
-      }) 
-      res.status(200).json(productsFiltered)
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-  }
-  else if (category) {
-    try {
-      productsFiltered = await Product.findAll({
-        include: [
-          { model: Brand},
-          { model: Category, where:{name:{[Op.iLike]:`%${category}%`}} },
-        ]
-      })
-      res.status(200).json(productsFiltered)
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-  }
-  else if (priceMax) {
-    try {
-      productsFiltered = await Product.findAll({
+      const results = await Product.findAll({
         where: {
           title: { [Op.iLike]: `%${name}%` },
           price: {
@@ -64,22 +20,17 @@ router.get('/', async (req, res, next) => {
           }
         },
         include: [
-          { model: Brand, where: { name: { [Op.iLike]: `%${brand}%` } } },
-          { model: Category, where: { name: { [Op.iLike]: `%${category}%` } } },
+          { model: Brand, where:{name:{[Op.iLike]:`%${brand}%`}}},
+          { model: Category,  where: { name: { [Op.iLike]: `%${category}%` } } },
         ]
       })
-
-      results.sort((a, b) => b.price - a.price) // ordeno precio de mayor a menor
-
-      if(!results.length) res.status(400).send('no hay productos con esos filtros')
-
       res.status(200).json(results)
-
     } catch (error) {
       console.log(error);
       next(error)
     }
   }
+
   else if(priceMax && priceMin && brand) {
     try {
       const results = (await getByBrand(brand)).filter(product => product.price <= priceMax && product.price >= priceMin)
@@ -152,6 +103,22 @@ router.get('/', async (req, res, next) => {
       res.status(200).json(results)
 
     } catch (error) {
+      next(error)
+    }
+  }
+  else if (size) {
+    try { 
+       productsFiltered = await Product.findAll({
+        where:{size:{[Op.contains]:[{number:size}]}},
+        attributes: ['size'],
+        include: [
+          { model: Brand},
+          { model: Category },
+        ]
+      }) 
+      res.status(200).json(productsFiltered)
+    } catch (error) {
+      console.log(error);
       next(error)
     }
   }
