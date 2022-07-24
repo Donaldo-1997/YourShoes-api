@@ -39,7 +39,10 @@ const setDataApi = async () => {
     price: e.price, //parseInt(s.price)
     category: e.category_id,
     stock: e.available_quantity,
-    sold: e.sold_quantity                                                                                                       
+    sold: e.sold_quantity,
+    size:[{number:35,stock:20},{number:35.5,stock:20},{number:36,stock:20},{number:36.5,stock:20},{number:37,stock:20}
+      ,{number:37.5,stock:20},{number:38,stock:20},{number:39,stock:20},{number:40,stock:20},{number:41,stock:20}
+      ,{number:42,stock:20},{number:43,stock:20},{number:44,stock:20},{number:45,stock:20}],                                                                                                      
   }));
   const cargoFinal= cargoalDB.filter(e=>e.id!=='MLA1142122158')
   //cargo los productos al db y necesita que ya este cargada las categoria para que se cree la relacion

@@ -21,7 +21,11 @@ module.exports = (sequelize) => {
         },
         image: {
             type: DataTypes.STRING,
-            allownull: false
+            allownull: false,
+        },
+        size:{
+            type:DataTypes.JSONB,
+            allowNull: false,
         },
         isActive: {
             type: DataTypes.BOOLEAN,

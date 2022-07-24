@@ -6,7 +6,7 @@ const router = Router();
 
 let cargo = false
 router.get('/', async (req, res, next) => {
-  const { name, priceMax, priceMin, brand, category } = req.query;
+  const { name, priceMax, priceMin, brand, category, size } = req.query;
   let productsFiltered = undefined;
   if (name) {
     try {
@@ -35,6 +35,22 @@ router.get('/', async (req, res, next) => {
           { model: Category },
         ]
       })
+      res.status(200).json(productsFiltered)
+    } catch (error) {
+      console.log(error);
+      next(error)
+    }
+  }
+  else if (size) {
+    try { 
+       productsFiltered = await Product.findAll({
+        where:{size:{[Op.contains]:[{number:size}]}},
+        attributes: ['size'],
+        include: [
+          { model: Brand},
+          { model: Category },
+        ]
+      }) 
       res.status(200).json(productsFiltered)
     } catch (error) {
       console.log(error);
@@ -126,6 +142,7 @@ router.post("/", async (req, res) => {
       model,
       image,
       price,
+      size,
       brand,
       category
     } = req.body
@@ -139,6 +156,7 @@ router.post("/", async (req, res) => {
         model,
         image,
         price,
+        size
       },
     })
     const findCategories = await Category.findOne({ where: { name: { [Op.iLike]: `%${category}%` } } })
