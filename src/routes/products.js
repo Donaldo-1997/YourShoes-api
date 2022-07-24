@@ -6,7 +6,7 @@ const router = Router();
 
 let cargo = false
 router.get('/', async (req, res, next) => {
-  const { name, priceMax, priceMin, brand } = req.query;
+  const { name, priceMax, priceMin, brand, category } = req.query;
   let productsFiltered = undefined;
   if (name) {
     try {
@@ -33,6 +33,20 @@ router.get('/', async (req, res, next) => {
         include: [
           { model: Brand, where:{name:{[Op.iLike]:`%${brand}%`}}},
           { model: Category },
+        ]
+      })
+      res.status(200).json(productsFiltered)
+    } catch (error) {
+      console.log(error);
+      next(error)
+    }
+  }
+  else if (category) {
+    try {
+      productsFiltered = await Product.findAll({
+        include: [
+          { model: Brand},
+          { model: Category, where:{name:{[Op.iLike]:`%${category}%`}} },
         ]
       })
       res.status(200).json(productsFiltered)
