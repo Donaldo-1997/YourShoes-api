@@ -26,7 +26,7 @@ router.use(passport.initialize());
 router.use(passport.session());
 
 // Example protected and unprotected routes
-router.get('/', (req, res) => res.render('pages/index'))
+// router.get('/', (req, res) => res.render('pages/index'))
 router.get('/failed', (req, res) => res.send('You Failed to log in!'))
 
 // In this route you can see that if the user is logged in u can acess his info in: req.user
@@ -36,18 +36,18 @@ router.get('/good', isLoggedIn, (req, res) =>{
 })
 
 // Auth Routes
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/callback', passport.authenticate('google', { failureRedirect: '/failed' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('good');
+    res.redirect('http://localhost:3000');
   }
 );
 
 router.get('/logout', (req, res) => {
     req.session = null;
     req.logout();
-    res.redirect('/shoes');
+    res.redirect('http://localhost:3000');
 })
 module.exports = router;
