@@ -2,79 +2,16 @@ const { Router } = require('express');
 const { Product, Brand, Category } = require('../db.js');
 const { Op } = require('sequelize')
 const { getByName, getByBrand, getByCategory, getByPrice, getAll } = require('../controllers/products.js');
+const {getAllFilters}= require('../controllers/filtersCombinations')
 const router = Router();
+
 
 router.get('/', async (req, res, next) => {
   const { name, priceMax, priceMin, brand, category, size } = req.query;
-
-  if(priceMax && priceMin && category && brand && name) {
-    try {
-      const results = await Product.findAll({
-        where: {
-          title: { [Op.iLike]: `%${name}%` },
-          price: {
-            [Op.and]: [
-              { [Op.gte]: priceMin ? priceMin : 0 }, // Precio sea mayor o igual a precio minimo
-              { [Op.lte]: priceMax } // Precio sea menor o igual a precio maximo
-            ]
-          }
-        },
-        include: [
-          { model: Brand, where:{name:{[Op.iLike]:`%${brand}%`}}},
-          { model: Category,  where: { name: { [Op.iLike]: `%${category}%` } } },
-        ]
-      })
-      res.status(200).json(results)
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-  }
-
-  else if(priceMax && priceMin && brand) {
-    try {
-      const results = (await getByBrand(brand)).filter(product => product.price <= priceMax && product.price >= priceMin)
-
-      results.sort((a, b) => b.price - a.price) // ordeno precio de mayor a menor
-
-      if(!results.length) res.status(400).send('no hay productos con esos filtros')
-
-      res.status(200).json(results)
-
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-  }
-  else if(priceMax && priceMin && name) {
-    try {
-      const results = (await getByName(name)).filter(product => product.price <= priceMax && product.price >= priceMin)
-
-      results.sort((a, b) => b.price - a.price) // ordeno precio de mayor a menor
-
-      if(!results.length) res.status(400).send('no hay productos con esos filtros')
-
-      res.status(200).json(results)
-
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-  }
-  else if(priceMax && priceMin && category) {
-    try {
-      const results = (await getByCategory(category)).filter(product => product.price <= priceMax && product.price >= priceMin)
-
-      results.sort((a, b) => b.price - a.price) // ordeno precio de mayor a menor
-
-      if(!results.length) res.status(400).send('no hay productos con esos filtros')
-
-      res.status(200).json(results)
-
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
+  const options = getAllFilters(req.query)
+  if(Object.keys(options).length){
+    const resulTs = await Product.findAll(options)
+    res.status(200).json(resulTs)
   }
   else if (name) {
     try {
@@ -107,15 +44,15 @@ router.get('/', async (req, res, next) => {
     }
   }
   else if (size) {
-    try { 
-       productsFiltered = await Product.findAll({
-        where:{size:{[Op.contains]:[{number:size}]}},
+    try {
+      productsFiltered = await Product.findAll({
+        where: { size: { [Op.contains]: [{ number: size }] } },
         attributes: ['size'],
         include: [
-          { model: Brand},
+          { model: Brand },
           { model: Category },
         ]
-      }) 
+      })
       res.status(200).json(productsFiltered)
     } catch (error) {
       console.log(error);
