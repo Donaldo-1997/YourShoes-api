@@ -80,6 +80,24 @@ async function getByPrice(priceMin, priceMax) {
       }
 }
 
+async function getBySize(size) {
+  try {
+    const all = await Product.findAll({
+      include: [
+        { model: Brand },
+        { model: Category },
+      ]
+    })
+    
+    const results = all.map(JSON.stringify).filter(product => product.includes(`"number":${size}`) && !product.includes(`"stock":0`)).map(product => JSON.parse(product))
+
+    return results
+
+  } catch (error) {
+    throw error
+  }
+}
+
 async function getAll() {
     try {
         let result = cargo ? await Product.findAll({
@@ -103,5 +121,6 @@ module.exports = {
     getByBrand,
     getByCategory,
     getByPrice,
+    getBySize,
     getAll
 }

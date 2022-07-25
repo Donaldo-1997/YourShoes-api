@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { Product, Brand, Category } = require('../db.js');
 const { Op } = require('sequelize')
-const { getByName, getByBrand, getByCategory, getByPrice, getAll } = require('../controllers/products.js');
+const { getByName, getByBrand, getByCategory, getByPrice, getAll, getBySize } = require('../controllers/products.js');
 const {getAllFilters}= require('../controllers/filtersCombinations')
 const router = Router();
 
@@ -45,17 +45,10 @@ router.get('/', async (req, res, next) => {
   }
   else if (size) {
     try {
-      productsFiltered = await Product.findAll({
-        where: { size: { [Op.contains]: [{ number: size }] } },
-        attributes: ['size'],
-        include: [
-          { model: Brand },
-          { model: Category },
-        ]
-      })
-      res.status(200).json(productsFiltered)
+      const results = await getBySize(size)
+
+      res.status(200).json(results)
     } catch (error) {
-      console.log(error);
       next(error)
     }
   }
