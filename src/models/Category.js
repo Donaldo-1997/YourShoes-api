@@ -3,9 +3,10 @@ const { DataTypes } = require('sequelize')
 module.exports = (sequelize) => {
     sequelize.define('category', {
         id: {
-            type: DataTypes.BIGINT,
+            type: DataTypes.STRING,
             primaryKey:true,
-            allownull:false
+            allownull:false,
+            unique: true
         },
         name:{
             type: DataTypes.STRING,

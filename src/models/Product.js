@@ -2,12 +2,17 @@ const { DataTypes } = require('sequelize')
 
 module.exports = (sequelize) => {
     sequelize.define('product', {
+        id: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            primaryKey: true,
+        },
         title: {
             type: DataTypes.STRING,
             allownull: false
         },
         price: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.FLOAT,
             allownull: false
         },
         model: {
@@ -16,12 +21,16 @@ module.exports = (sequelize) => {
         },
         image: {
             type: DataTypes.STRING,
-            allownull: false
+            allownull: false,
         },
-        isActive:{
+        size:{
+            type:DataTypes.JSONB,
+            allowNull: false,
+        },
+        isActive: {
             type: DataTypes.BOOLEAN,
             defaultValue: true,
             allownull: false
         }
-    },{timestamps: false})
+    }, { timestamps: false })
 }

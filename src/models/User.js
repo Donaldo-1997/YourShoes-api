@@ -1,12 +1,8 @@
-const { DataTypes } = require('sequelize')
+const { DataTypes} = require('sequelize')
 
 module.exports = (sequelize) => {
     sequelize.define('User', {
-        id: {
-            type: DataTypes.STRING,
-            primaryKey: true,
-            allownull: false
-        },
+
         name:{
             type: DataTypes.STRING,
             allownull: false,
@@ -21,14 +17,30 @@ module.exports = (sequelize) => {
         },
         email:{
             type: DataTypes.STRING,
-            allownull:false
+            allownull:false,
+            unique: true,
+            validate: {
+                isEmail: {
+                  msg: "El email tiene que ser un correo valido"
+                }
+              }
+        },
+        password:{
+            type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: {
+          args: [6, 255],
+          msg: "La contraseña tiene que tener minimamente 6 caracteres"
+           }
+         }            
         },
         phone_number:{
-            type: DataTypes.INTEGER,
-            allownull:false
+            type: DataTypes.STRING,
+            allownull:true
         },
         date_of_Birth:{
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allownull: false
         },
         address:{
@@ -37,10 +49,12 @@ module.exports = (sequelize) => {
         },
         isAdmin:{
             type: DataTypes.BOOLEAN,
+            defaultValue: false,
             allownull:false
         },
         isBanned:{
             type: DataTypes.BOOLEAN,
+            defaultValue: false,
             allownull: false
         },
         isActive:{
