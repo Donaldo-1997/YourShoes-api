@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const routes = require('./routes/index.js')
 const passport= require('passport')
 const cookieSession = require('cookie-session')
+const {CORS_URL} = process.env;
 
 require('./db.js');
 
@@ -18,7 +19,7 @@ server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser());
 server.use(morgan('dev'));
 server.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Origin', CORS_URL);
     res.header('Access-Control-Allow-Credentials', 'true')
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
