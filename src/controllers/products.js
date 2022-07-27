@@ -83,15 +83,14 @@ async function getByPrice(priceMin, priceMax) {
 async function getBySize(size) {
   try {
     const all = await Product.findAll({
+      where:{size:[size]},
       include: [
         { model: Brand },
         { model: Category },
       ]
     })
     
-    const results = all.map(JSON.stringify).filter(product => product.includes(`"number":${size}`) && !product.includes(`"stock":0`)).map(product => JSON.parse(product))
-
-    return results
+    return all
 
   } catch (error) {
     throw error

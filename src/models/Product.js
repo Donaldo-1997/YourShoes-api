@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
             allownull: false,
         },
         size:{
-            type:DataTypes.JSONB,
+            type:DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: false,
         },
         isActive: {
