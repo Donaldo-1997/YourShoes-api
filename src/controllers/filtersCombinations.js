@@ -2,7 +2,7 @@ const { Product, Brand, Category } = require('../db');
 const { Op } = require('sequelize');
 
 
-function getAllFilters({ priceMax, priceMin, category, brand, name }) {
+function getAllFilters({ priceMax, priceMin, category, brand, name, size }) {
     let options = {}
     if (priceMax && priceMin && category && brand && name) {
       options = {
@@ -18,6 +18,23 @@ function getAllFilters({ priceMax, priceMin, category, brand, name }) {
         include: [
           { model: Brand, where: { name: { [Op.iLike]: `%${brand}%` } } },
           { model: Category, where: { name: { [Op.iLike]: `%${category}%` } } },
+        ]
+      }
+    }
+    else if(size && brand && priceMax && priceMin){
+      options = {
+        where: {
+          size:[size],
+          price: {
+            [Op.and]: [
+              { [Op.gte]: priceMin ? priceMin : 0 }, // Precio sea mayor o igual a precio minimo
+              { [Op.lte]: priceMax } // Precio sea menor o igual a precio maximo
+            ],
+          }
+        },
+        include: [
+          { model: Brand, where: { name: { [Op.iLike]: `%${brand}%` } } },
+          { model: Category},
         ]
       }
     }
@@ -161,6 +178,86 @@ function getAllFilters({ priceMax, priceMin, category, brand, name }) {
         ]
       }
     }
+    else if(size && priceMax && priceMin){
+      options = {
+        where: {
+          size:[size],
+          price: {
+            [Op.and]: [
+              { [Op.gte]: priceMin ? priceMin : 0 }, // Precio sea mayor o igual a precio minimo
+              { [Op.lte]: priceMax } // Precio sea menor o igual a precio maximo
+            ],
+          }
+        },
+        include: [
+          { model: Brand},
+          { model: Category},
+        ]
+      }
+    }
+    else if(size && brand){
+      options = {
+        where: {
+          size:[size],
+        },
+        include: [
+          { model: Brand, where: { name: { [Op.iLike]: `%${brand}%` } } },
+          { model: Category},
+        ]
+      }
+    }
+    else if(size && category){
+      options = {
+        where: {
+          size:[size],
+        },
+        include: [
+          { model: Brand},
+          { model: Category, where: { name: { [Op.iLike]: `%${category}%` } }},
+        ]
+      }
+    }
+    else if(size && name){
+      options = {
+        where: {
+          size:[size],
+          title: { [Op.iLike]: `%${name}%` },
+        },
+        include: [
+          { model: Brand},
+          { model: Category},
+        ]
+      }
+    }
+    else if(size && category && brand){
+      options = {
+        where: {
+          size:[size],
+        },
+        include: [
+          { model: Brand, where: { name: { [Op.iLike]: `%${brand}%` } }},
+          { model: Category, where: { name: { [Op.iLike]: `%${category}%` } }},
+        ]
+      }
+    }
+    else if(category && brand && priceMax && priceMin && size){
+      options = {
+        where: {
+          size:[size],
+          price: {
+            [Op.and]: [
+              { [Op.gte]: priceMin ? priceMin : 0 }, // Precio sea mayor o igual a precio minimo
+              { [Op.lte]: priceMax } // Precio sea menor o igual a precio maximo
+            ],
+          }
+        },
+        include: [
+          { model: Brand, where: { name: { [Op.iLike]: `%${brand}%` } } },
+          { model: Category, where: { name: { [Op.iLike]: `%${category}%` } }},
+        ]
+      }
+    }
+    console.log(options)
     return options
   }
   module.exports={getAllFilters}
