@@ -7,7 +7,6 @@
     "start": "node .",
     "test": "mocha -w ./tests/**/*.spec.js",
     "dev": "nodemon ."
-    
   },
   "author": "yourShoes",
   "license": "ISC",
