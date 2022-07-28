@@ -14,9 +14,7 @@ const login = require('./login')
 const google = require('./google')
 const mercadoRouter = require("./mercadopago.js")
 //--------------------------ROUTES
-router.use("/",(req, res) => {
-    res.send('prueba de deploy')
-})
+
 router.use("/google", google)
 router.use("/login", login)
 router.use("/user/", user);
